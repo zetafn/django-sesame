@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import base64
 import struct
 import uuid
 
@@ -47,4 +48,14 @@ class UUIDPacker(object):
         return uuid.UUID(bytes=data[:16]), data[16:]
 
 
-PACKERS = {"AutoField": IntPacker, "IntegerField": IntPacker, "UUIDField": UUIDPacker}
+class FlaxIDPacker(object):
+    @staticmethod
+    def pack_pk(user_pk):
+        return base64.urlsafe_b64decode(user_pk)
+
+    @staticmethod
+    def unpack_pk(data):
+        return base64.urlsafe_b64encode(data[:12]).decode('utf-8'), data[12:]
+
+
+PACKERS = {"AutoField": IntPacker, "IntegerField": IntPacker, "UUIDField": UUIDPacker, "TextField": FlaxIDPacker}
